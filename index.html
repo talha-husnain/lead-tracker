@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lead Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AF%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">◆</div>
+      <div class="brand-text">
+        <div class="brand-title">Lead Tracker</div>
+        <div class="brand-sub" id="brandSub">Your pipeline, in one place</div>
+      </div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="dashboard">Dashboard</button>
+      <button class="tab" data-view="leads">Leads</button>
+      <button class="tab" data-view="board">Board</button>
+      <button class="tab" data-view="reports">Reports</button>
+    </nav>
+
+    <div class="header-actions">
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm5 12 4 4"/></svg>
+        <input id="globalSearch" type="search" placeholder="Search leads…" autocomplete="off" />
+      </label>
+      <button id="addLeadBtn" class="btn btn-primary" data-action="add-lead">
+        <span class="plus">+</span> Add Lead
+      </button>
+      <div class="menu">
+        <button id="dataMenuBtn" class="btn btn-ghost" aria-haspopup="true">Data ▾</button>
+        <div class="menu-list is-hidden" id="dataMenu" role="menu">
+          <button role="menuitem" data-action="backup">⬇ Download backup (JSON)</button>
+          <button role="menuitem" data-action="restore">⬆ Restore from backup</button>
+          <button role="menuitem" data-action="csv">↧ Export to CSV (Excel)</button>
+          <button role="menuitem" data-action="import">⤒ Import from CSV</button>
+          <div class="menu-sep"></div>
+          <button role="menuitem" data-action="linkfile">🔗 Link data file (auto-save)</button>
+          <button role="menuitem" data-action="statuses">🎨 Pipeline &amp; colors</button>
+          <button role="menuitem" data-action="settings">⚙ Settings &amp; templates</button>
+          <button role="menuitem" data-action="help">⌨ Keyboard shortcuts</button>
+          <div class="menu-sep"></div>
+          <button role="menuitem" data-action="sample">✨ Load sample data</button>
+          <button role="menuitem" data-action="clear" class="danger">🗑 Clear all data</button>
+        </div>
+      </div>
+      <button id="themeToggle" class="btn btn-icon" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <!-- ============ REMINDER / STATUS BANNER ============ -->
+  <div id="reminderBanner" class="banner is-hidden"></div>
+
+  <!-- ============ MAIN VIEW MOUNT ============ -->
+  <main id="app" class="app-main"></main>
+
+  <!-- ============ OVERLAY + DRAWER + MODALS ============ -->
+  <div id="overlay" class="overlay is-hidden"></div>
+  <aside id="drawer" class="drawer" aria-hidden="true"></aside>
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast is-hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
