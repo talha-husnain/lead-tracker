@@ -289,11 +289,11 @@ function backupJSON() {
 }
 
 function exportCSV() {
-  const cols = ['Name', 'Email', 'Phone', 'Company', 'Title', 'Source', 'Source URL',
+  const cols = ['Name', 'Email', 'Phone', 'Company', 'Project', 'Title', 'Source', 'Source URL',
     'Status', 'Priority', 'Value', 'Tags', 'Next Follow-up', 'Created', 'Updated', 'Notes'];
   const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
   const rows = DB.leads.map(l => [
-    l.name, l.email, l.phone, l.company, l.title, l.source, l.sourceUrl,
+    l.name, l.email, l.phone, l.company, l.project, l.title, l.source, l.sourceUrl,
     statusById(l.status).label, prioById(l.priority).label, l.value || '',
     (l.tags || []).join('; '), l.nextFollowUp || '',
     fmtDate(l.createdAt), fmtDate(l.updatedAt),
@@ -337,7 +337,7 @@ function upsertLead(data) {
   }
   const lead = {
     id: uid(),
-    name: '', email: '', phone: '', company: '', title: '',
+    name: '', email: '', phone: '', company: '', title: '', project: '',
     source: 'LinkedIn', sourceUrl: '', status: DB.statuses[0].id,
     priority: 'warm', value: 0, tags: [], nextFollowUp: '',
     notes: [], links: [], createdAt: now, updatedAt: now,
@@ -649,6 +649,7 @@ function kcardHTML(l) {
     ${l.company ? `<div class="kcard-co">${esc(l.title ? l.title + ' · ' : '')}${esc(l.company)}</div>` : ''}
     <div class="kcard-foot">
       ${l.value ? `<span class="chip val-chip">${fmtMoney(l.value)}</span>` : ''}
+      ${l.project ? `<span class="chip">📁 ${esc(l.project)}</span>` : ''}
       ${l.source ? `<span class="chip">${esc(l.source)}</span>` : ''}
       ${l.nextFollowUp ? followupPill(l) : ''}
     </div>
@@ -734,6 +735,7 @@ function openDrawer(id) {
         <h4>Details</h4>
         <div class="d-field"><span class="k">Email</span><span class="v">${l.email ? `<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>` : '—'}</span></div>
         <div class="d-field"><span class="k">Phone</span><span class="v">${esc(l.phone || '—')}</span></div>
+        ${l.project ? `<div class="d-field"><span class="k">Project</span><span class="v">${esc(l.project)}</span></div>` : ''}
         <div class="d-field"><span class="k">Source</span><span class="v">${esc(l.source || '—')}</span></div>
         <div class="d-field"><span class="k">Added</span><span class="v">${esc(fmtDate(l.createdAt))}</span></div>
         <div class="d-field"><span class="k">Updated</span><span class="v">${esc(fmtDate(l.updatedAt))}</span></div>
@@ -779,6 +781,7 @@ function openLeadModal(id) {
         <div class="field"><label>Phone</label><input name="phone" value="${esc(l?.phone || '')}" placeholder="+1 …"></div>
         <div class="field"><label>Company</label><input name="company" value="${esc(l?.company || '')}" placeholder="Company / brand"></div>
         <div class="field"><label>Title / role</label><input name="title" value="${esc(l?.title || '')}" placeholder="e.g. Marketing Director"></div>
+        <div class="field col-2"><label>Project (optional)</label><input name="project" value="${esc(l?.project || '')}" placeholder="e.g. Website redesign, Q3 social campaign"></div>
         <div class="field"><label>Source</label><select name="source">${srcOpts}</select></div>
         <div class="field"><label>Profile / link (LinkedIn, site…)</label><input name="sourceUrl" value="${esc(l?.sourceUrl || '')}" placeholder="https://linkedin.com/in/…"></div>
         <div class="field"><label>Status</label><select name="status">${statusOpts}</select></div>
@@ -801,7 +804,7 @@ function openLeadModal(id) {
     const f = new FormData(e.target);
     const data = {
       name: f.get('name').trim(), email: f.get('email').trim(), phone: f.get('phone').trim(),
-      company: f.get('company').trim(), title: f.get('title').trim(),
+      company: f.get('company').trim(), title: f.get('title').trim(), project: (f.get('project') || '').trim(),
       source: f.get('source'), sourceUrl: f.get('sourceUrl').trim(),
       status: f.get('status'), priority: f.get('priority'),
       value: Number(f.get('value')) || 0, nextFollowUp: f.get('nextFollowUp'),
@@ -1263,7 +1266,7 @@ function importCSV() {
         const col = {
           name: find('name', 'client', 'client name', 'full name', 'contact'),
           email: find('email', 'e-mail', 'email address'), phone: find('phone', 'phone number', 'mobile', 'tel'),
-          company: find('company', 'organization', 'business', 'brand'), title: find('title', 'role', 'position', 'job title'),
+          company: find('company', 'organization', 'business', 'brand'), title: find('title', 'role', 'position', 'job title'), project: find('project', 'project name'),
           source: find('source', 'lead source', 'channel'), sourceUrl: find('source url', 'link', 'profile', 'linkedin', 'url', 'website'),
           status: find('status', 'stage'), priority: find('priority'),
           value: find('value', 'deal value', 'amount', 'budget'), tags: find('tags', 'tag', 'labels'),
@@ -1276,7 +1279,7 @@ function importCSV() {
           const g = i => (i >= 0 && r[i] != null) ? String(r[i]).trim() : '';
           const name = g(col.name); if (!name) return;
           upsertLead({
-            name, email: g(col.email), phone: g(col.phone), company: g(col.company), title: g(col.title),
+            name, email: g(col.email), phone: g(col.phone), company: g(col.company), title: g(col.title), project: g(col.project),
             source: g(col.source) || 'Other', sourceUrl: g(col.sourceUrl),
             status: statusByLabel[g(col.status).toLowerCase()] || DB.statuses[0].id,
             priority: ({ hot: 'hot', warm: 'warm', cold: 'cold' })[g(col.priority).toLowerCase()] || 'warm',
@@ -1466,9 +1469,9 @@ function bulkDelete() {
 }
 function bulkExport() {
   const sel = DB.leads.filter(l => state.selected.has(l.id));
-  const cols = ['Name', 'Email', 'Phone', 'Company', 'Title', 'Source', 'Status', 'Priority', 'Value', 'Tags', 'Next Follow-up', 'Notes'];
+  const cols = ['Name', 'Email', 'Phone', 'Company', 'Project', 'Title', 'Source', 'Status', 'Priority', 'Value', 'Tags', 'Next Follow-up', 'Notes'];
   const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const rows = sel.map(l => [l.name, l.email, l.phone, l.company, l.title, l.source, statusById(l.status).label,
+  const rows = sel.map(l => [l.name, l.email, l.phone, l.company, l.project, l.title, l.source, statusById(l.status).label,
     prioById(l.priority).label, l.value || '', (l.tags || []).join('; '), l.nextFollowUp || '',
     (l.notes || []).map(n => n.text).join(' • ')].map(q).join(','));
   downloadFile(`lead-tracker-selection-${todayStr()}.csv`, [cols.map(q).join(','), ...rows].join('\r\n'), 'text/csv');
