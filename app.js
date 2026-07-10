@@ -783,7 +783,7 @@ function openLeadModal(id) {
         <div class="field"><label>Profile / link (LinkedIn, site…)</label><input name="sourceUrl" value="${esc(l?.sourceUrl || '')}" placeholder="https://linkedin.com/in/…"></div>
         <div class="field"><label>Status</label><select name="status">${statusOpts}</select></div>
         <div class="field"><label>Priority</label><select name="priority">${prioOpts}</select></div>
-        <div class="field"><label>Deal value ($)</label><input name="value" type="number" min="0" step="100" value="${l?.value || ''}" placeholder="0"></div>
+        <div class="field"><label>Deal value ($)</label><input name="value" type="number" min="0" step="any" value="${l?.value || ''}" placeholder="0"></div>
         <div class="field"><label>Next follow-up</label><input name="nextFollowUp" type="date" value="${esc(l?.nextFollowUp || '')}"></div>
         <div class="field col-2"><label>Tags (comma separated)</label><input name="tags" value="${esc((l?.tags || []).join(', '))}" placeholder="enterprise, referral, hot"></div>
         <div class="field col-2"><label>Links (one per line — Label | https://…)</label><textarea name="links" placeholder="Proposal | https://...&#10;Contract | https://...">${esc((l?.links || []).map(x => `${x.label || ''} | ${x.url || ''}`).join('\n'))}</textarea></div>
@@ -1152,7 +1152,7 @@ function openTerminalModal(id, st) {
     <form data-terminal-form>
       <div class="form-grid">
         <div class="field"><label>${won ? 'Final deal value ($)' : 'Potential value ($)'}</label>
-          <input name="value" type="number" min="0" step="100" value="${l.value || ''}"></div>
+          <input name="value" type="number" min="0" step="any" value="${l.value || ''}"></div>
         <div class="field"><label>Closed date</label><input name="closedAt" type="date" value="${todayStr()}"></div>
         <div class="field col-2"><label>${won ? 'What closed it? (optional)' : 'Reason lost (optional)'}</label>
           <textarea name="reason" placeholder="${won ? 'e.g. Referral trust + fast turnaround' : 'e.g. Budget / timing / chose a competitor'}"></textarea></div>
@@ -1321,7 +1321,7 @@ function openSettingsModal() {
     <div class="form-grid">
       <div class="field"><label>Your name (email sign-off)</label><input name="senderName" value="${esc(s.senderName || '')}" placeholder="e.g. Alex"></div>
       <div class="field"><label>Your company</label><input name="senderCompany" value="${esc(s.senderCompany || '')}"></div>
-      <div class="field"><label>Monthly revenue goal ($)</label><input name="goal" type="number" min="0" step="500" value="${s.goal || ''}" placeholder="e.g. 50000"></div>
+      <div class="field"><label>Monthly revenue goal ($)</label><input name="goal" type="number" min="0" step="any" value="${s.goal || ''}" placeholder="e.g. 50000"></div>
       <div class="field"><label>Follow-up reminders</label>
         <button type="button" class="btn btn-ghost" data-toggle-notify>${s.notify ? '🔔 On — click to turn off' : '🔕 Off — click to enable'}</button></div>
     </div>
