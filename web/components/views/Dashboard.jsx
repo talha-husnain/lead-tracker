@@ -80,7 +80,7 @@ export function Dashboard() {
 
       <div className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
-          <div key={k.label} className="lift group relative overflow-hidden rounded-2xl border border-border/70 bg-card p-4 card-elev">
+          <div key={k.label} className="lift group relative overflow-hidden rounded-2xl border border-border/60 bg-card/55 backdrop-blur-2xl p-4 card-elev">
             <div className="pointer-events-none absolute -right-8 -top-10 size-28 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-45" style={{ background: `hsl(var(--c-${k.hue}))` }} />
             <div className="relative text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
             <div className="relative mt-2 font-display text-[2rem] leading-none tabular-nums" style={{ color: `hsl(var(--c-${k.hue}))` }}>{k.value}</div>

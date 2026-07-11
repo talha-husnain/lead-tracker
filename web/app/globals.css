@@ -128,12 +128,20 @@
     z-index: -2;
     pointer-events: none;
     background:
-      radial-gradient(32% 34% at 14% 18%, hsl(var(--c-iris) / 0.28), transparent 62%),
-      radial-gradient(30% 32% at 84% 8%, hsl(var(--c-pink) / 0.22), transparent 62%),
-      radial-gradient(38% 42% at 78% 82%, hsl(var(--c-sky) / 0.20), transparent 64%),
-      radial-gradient(30% 30% at 20% 92%, hsl(var(--c-mint) / 0.16), transparent 62%);
-    filter: blur(30px);
+      radial-gradient(34% 36% at 12% 14%, hsl(var(--c-iris) / 0.22), transparent 62%),
+      radial-gradient(32% 34% at 88% 6%, hsl(var(--c-pink) / 0.18), transparent 62%),
+      radial-gradient(40% 44% at 82% 84%, hsl(var(--c-sky) / 0.16), transparent 64%),
+      radial-gradient(32% 32% at 16% 92%, hsl(var(--c-mint) / 0.13), transparent 62%);
+    filter: blur(24px);
     animation: aurora 26s ease-in-out infinite alternate;
+  }
+  .dark body::before {
+    background:
+      radial-gradient(36% 40% at 10% 12%, hsl(var(--c-iris) / 0.5), transparent 60%),
+      radial-gradient(34% 38% at 90% 4%, hsl(var(--c-pink) / 0.42), transparent 60%),
+      radial-gradient(44% 48% at 84% 86%, hsl(var(--c-sky) / 0.4), transparent 62%),
+      radial-gradient(34% 36% at 14% 94%, hsl(var(--c-mint) / 0.3), transparent 60%),
+      radial-gradient(50% 50% at 50% 50%, hsl(var(--c-iris) / 0.12), transparent 70%);
   }
   /* fine grain overlay */
   body::after {
