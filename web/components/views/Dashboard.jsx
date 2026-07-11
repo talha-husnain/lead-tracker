@@ -21,7 +21,7 @@ export function Dashboard() {
         <Card className="max-w-md text-center">
           <CardContent className="p-8">
             <div className="mx-auto mb-4 grid size-12 place-items-center rounded-xl bg-primary/10 text-2xl">🎯</div>
-            <h2 className="font-display text-2xl font-extrabold tracking-tight">Welcome to your Lead Tracker</h2>
+            <h2 className="font-display text-2xl font-bold tracking-tight">Welcome to your Lead Tracker<span className="text-primary">.</span></h2>
             <p className="mt-2 text-sm text-muted-foreground">Capture every lead, never miss a follow-up, and watch deals move from first contact to won.</p>
             <div className="mt-5 flex justify-center gap-2">
               <Button onClick={() => ui.openForm(null)}><Plus className="size-4" /> Add your first lead</Button>
@@ -44,11 +44,11 @@ export function Dashboard() {
   const wonVal = won.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
   const kpis = [
-    { label: "Open Leads", value: open.length, sub: `${leads.length} total`, hue: "iris" },
-    { label: "Follow-ups Due", value: due.length, sub: due.length ? "Needs attention today" : "All caught up 🎉", hue: due.length ? "pink" : "mint" },
-    { label: "Due This Week", value: week.length, sub: "Next 7 days", hue: "amber" },
-    { label: "Pipeline Value", value: fmtMoney(pipeVal), sub: "Open opportunities", hue: "sky" },
-    { label: "Won", value: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}`, hue: "mint" },
+    { label: "Open Leads", value: open.length, sub: `${leads.length} total` },
+    { label: "Follow-ups Due", value: due.length, sub: due.length ? "Needs attention today" : "All caught up", accent: due.length > 0 },
+    { label: "Due This Week", value: week.length, sub: "Next 7 days" },
+    { label: "Pipeline Value", value: fmtMoney(pipeVal), sub: "Open opportunities" },
+    { label: "Won", value: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}` },
   ];
 
   const attention = open.filter((l) => l.nextFollowUp)
@@ -70,7 +70,7 @@ export function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight">Dashboard</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Dashboard<span className="text-primary">.</span></h1>
           <p className="text-sm text-muted-foreground">
             {due.length ? `You have ${due.length} follow-up${due.length > 1 ? "s" : ""} to send today.` : "You're all caught up."}
           </p>
@@ -80,12 +80,10 @@ export function Dashboard() {
 
       <div className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
-          <div key={k.label} className="lift group relative overflow-hidden rounded-2xl border border-border/60 bg-card/55 backdrop-blur-2xl p-4 card-elev">
-            <div className="pointer-events-none absolute -right-8 -top-10 size-28 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-45" style={{ background: `hsl(var(--c-${k.hue}))` }} />
-            <div className="relative text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
-            <div className="relative mt-2 font-display text-[2rem] leading-none tabular-nums" style={{ color: `hsl(var(--c-${k.hue}))` }}>{k.value}</div>
-            <div className="relative mt-2 text-xs text-muted-foreground">{k.sub}</div>
-            <div className="absolute inset-x-0 bottom-0 h-1" style={{ background: `linear-gradient(90deg, hsl(var(--c-${k.hue})), transparent)` }} />
+          <div key={k.label} className="lift rounded-lg border border-border bg-card p-4">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
+            <div className={"mt-2 font-display text-[2rem] font-semibold leading-none tabular-nums " + (k.accent ? "text-primary" : "text-foreground")}>{k.value}</div>
+            <div className="mt-2 text-xs text-muted-foreground">{k.sub}</div>
           </div>
         ))}
       </div>

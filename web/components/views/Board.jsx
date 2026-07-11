@@ -25,7 +25,7 @@ export function Board() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">Board</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Board<span className="text-primary">.</span></h1>
         <p className="text-sm text-muted-foreground">Drag a card between columns to change its status.</p>
       </div>
       <div className="flex items-start gap-2 overflow-x-auto pb-4">
@@ -38,12 +38,12 @@ export function Board() {
               onDragLeave={() => setOverCol((c) => (c === s.id ? null : c))}
               onDrop={(e) => { e.preventDefault(); if (dragId) move(dragId, s.id); setOverCol(null); }}
               className={cn(
-                "flex max-h-[calc(100vh-200px)] w-72 shrink-0 flex-col rounded-2xl border border-border/60 bg-card/40 backdrop-blur-xl transition-all",
-                overCol === s.id && "ring-2 ring-[hsl(var(--c-iris))] glow-brand-sm"
+                "flex max-h-[calc(100vh-200px)] w-72 shrink-0 flex-col rounded-lg border border-border bg-card transition-colors",
+                overCol === s.id && "ring-2 ring-primary"
               )}
             >
-              <div className="flex items-center gap-2 border-b border-border/60 px-3 py-2.5">
-                <span className="size-2.5 rounded-full" style={{ backgroundColor: s.color, boxShadow: `0 0 10px ${s.color}` }} />
+              <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
+                <span className="size-2.5 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="text-sm font-semibold">{s.label}</span>
                 <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">{items.length}</span>
               </div>
@@ -57,7 +57,7 @@ export function Board() {
                       onDragStart={() => setDragId(l.id)}
                       onDragEnd={() => setDragId(null)}
                       onClick={() => ui.openDetail(l.id)}
-                      className="group/card relative cursor-grab rounded-xl border border-border/60 bg-card/70 p-3 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-[hsl(var(--c-iris))]/50 hover:shadow-[0_10px_24px_-12px_hsl(var(--c-iris)/0.5)] active:cursor-grabbing"
+                      className="group/card relative cursor-grab rounded-md border border-border bg-secondary p-3 transition-colors hover:border-primary/60 active:cursor-grabbing"
                       style={{ borderLeft: `3px solid ${s.color}` }}
                     >
                       <GripVertical className="absolute right-1.5 top-2 size-3.5 text-muted-foreground/30 transition-colors group-hover/card:text-muted-foreground/60" />
@@ -69,7 +69,7 @@ export function Board() {
                         <div className="mt-0.5 truncate text-xs text-muted-foreground">{[l.company, l.project].filter(Boolean).join(" · ")}</div>
                       )}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        {l.value ? <span className="rounded-md bg-secondary px-1.5 py-0.5 text-xs font-semibold text-[hsl(var(--good))]">{fmtMoney(l.value)}</span> : null}
+                        {l.value ? <span className="rounded border border-border px-1.5 py-0.5 text-xs font-semibold text-[hsl(var(--good))]">{fmtMoney(l.value)}</span> : null}
                         {l.nextFollowUp && <FollowupPill date={l.nextFollowUp} />}
                       </div>
                     </div>

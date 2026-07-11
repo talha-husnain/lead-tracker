@@ -95,7 +95,7 @@ export function LeadsView() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight">Leads</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Leads<span className="text-primary">.</span></h1>
           <p className="text-sm text-muted-foreground">{list.length} shown · {leads.length} total</p>
         </div>
       </div>

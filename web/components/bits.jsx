@@ -25,7 +25,7 @@ export function FollowupPill({ date }) {
   const d = relDays(date);
   const cls =
     d < 0 ? "bg-destructive/15 text-destructive"
-    : d === 0 ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+    : d === 0 ? "bg-primary/15 text-primary"
     : "bg-muted text-muted-foreground";
   const txt = d < 0 ? `${-d}d overdue` : d === 0 ? "Today" : fmtDate(date);
   return <span className={cn("inline-block whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold", cls)}>{txt}</span>;

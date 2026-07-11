@@ -1,20 +1,19 @@
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import { Providers } from "@/components/Providers";
 
-const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans-var", display: "swap" });
+const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-display-var", display: "swap" });
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans-var", display: "swap" });
 
 export const metadata = {
   title: "Lead Tracker",
-  description: "Your sales pipeline — leads, follow-ups, and deals in one place.",
+  description: "Intelligent software, engineered to scale.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={sans.variable}>
+    <html lang="en" suppressHydrationWarning className={`${display.variable} ${sans.variable}`}>
       <body className="min-h-screen antialiased">
-        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
-        <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700,800&display=swap" />
         <Providers>{children}</Providers>
       </body>
     </html>

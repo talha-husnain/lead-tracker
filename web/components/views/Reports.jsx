@@ -56,7 +56,7 @@ export function Reports() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">Reports</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Reports<span className="text-primary">.</span></h1>
         <p className="text-sm text-muted-foreground">Your pipeline performance.</p>
       </div>
 
@@ -106,7 +106,7 @@ export function Reports() {
               {srcEntries.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No data yet.</p>
               ) : (
-                srcEntries.map(([k, v]) => <Bar key={k} label={k} pct={(v / sMax) * 100} color="#4f46e5" val={v} />)
+                srcEntries.map(([k, v]) => <Bar key={k} label={k} pct={(v / sMax) * 100} color="hsl(var(--muted-foreground))" val={v} />)
               )}
             </div>
           </CardContent>
