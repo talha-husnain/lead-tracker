@@ -5,6 +5,7 @@ import { UiContext } from "./ui-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownItem, DropdownSep } from "@/components/ui/dropdown";
+import { Today } from "./views/Today";
 import { Dashboard } from "./views/Dashboard";
 import { LeadsView } from "./views/LeadsView";
 import { Board } from "./views/Board";
@@ -25,6 +26,7 @@ import { Target, Plus, Moon, Sun, LogOut, Search, Cloud, ChevronDown, AlarmClock
 import { cn } from "@/lib/utils";
 
 const TABS = [
+  ["today", "Today"],
   ["dashboard", "Dashboard"],
   ["leads", "Leads"],
   ["board", "Board"],
@@ -43,7 +45,7 @@ function download(name, content, type) {
 export function AppShell() {
   const { db, mode, user, theme, actions } = useStore();
   const toast = useToast();
-  const [tab, setTab] = useState("dashboard");
+  const [tab, setTab] = useState("today");
   const [detailId, setDetailId] = useState(null);
   const [formLead, setFormLead] = useState(undefined);
   const [emailId, setEmailId] = useState(null);
@@ -254,6 +256,7 @@ export function AppShell() {
 
         <main className="mx-auto max-w-7xl px-4 py-6">
           <div key={tab} className="animate-rise">
+            {tab === "today" && <Today />}
             {tab === "dashboard" && <Dashboard />}
             {tab === "leads" && <LeadsView />}
             {tab === "board" && <Board />}

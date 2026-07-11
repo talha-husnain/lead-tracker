@@ -5,12 +5,15 @@ import { useUi } from "../ui-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/ui/count-up";
+import { Ring } from "@/components/ui/ring";
+import { Sparkline } from "@/components/ui/sparkline";
 import { Avatar, FollowupPill } from "../bits";
 import { Dot } from "@/components/ui/badge";
 import { isOpenLead, statusById, relDays, fmtMoney, fmtDate, monthKey } from "@/lib/helpers";
+import { activityStreak, addedThisWeek, createdPerDay } from "@/lib/insights";
 import { sampleLeads } from "@/lib/sample";
 import { cn } from "@/lib/utils";
-import { Plus, Sparkles, Users, AlarmClock, CalendarDays, DollarSign, Trophy } from "lucide-react";
+import { Plus, Sparkles, Users, AlarmClock, CalendarDays, DollarSign, Trophy, Flame, TrendingUp } from "lucide-react";
 
 export function Dashboard() {
   const { db, actions } = useStore();
@@ -64,6 +67,8 @@ export function Dashboard() {
   const wonThisMonth = won.filter((l) => monthKey(l.closedAt || l.updatedAt) === monthKey(new Date().toISOString()))
     .reduce((s, l) => s + (Number(l.value) || 0), 0);
   const goalPct = goal ? Math.min(100, Math.round((wonThisMonth / goal) * 100)) : 0;
+  const streak = activityStreak(leads);
+  const addedWk = addedThisWeek(leads);
 
   const acts = [];
   leads.forEach((l) => (l.notes || []).forEach((n) => acts.push({ l, n })));
@@ -97,19 +102,51 @@ export function Dashboard() {
         ))}
       </div>
 
-      {goal > 0 && (
+      <div className="stagger grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card>
-          <CardContent className="flex flex-wrap items-center gap-4 p-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Monthly goal</div>
-            <div className="text-lg font-semibold tabular-nums">{fmtMoney(wonThisMonth)}</div>
-            <div className="text-sm text-muted-foreground">of {fmtMoney(goal)}</div>
-            <div className="h-2.5 min-w-[160px] flex-1 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${mounted ? goalPct : 0}%` }} />
+          <CardContent className="flex items-center gap-3 p-4">
+            <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><Flame className="size-5" /></div>
+            <div>
+              <div className="font-display text-2xl font-semibold tabular-nums">{streak}<span className="ml-1 text-sm font-medium text-muted-foreground">day{streak === 1 ? "" : "s"}</span></div>
+              <div className="text-xs text-muted-foreground">Follow-up streak</div>
             </div>
-            <div className="text-sm font-semibold tabular-nums">{goalPct}%</div>
           </CardContent>
         </Card>
-      )}
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><TrendingUp className="size-5" /></div>
+            <div className="flex-1">
+              <div className="font-display text-2xl font-semibold tabular-nums">+{addedWk}</div>
+              <div className="text-xs text-muted-foreground">Added this week</div>
+            </div>
+            <Sparkline data={createdPerDay(leads, 12)} width={72} height={30} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-4 p-4">
+            {goal ? (
+              <>
+                <Ring value={wonThisMonth / goal} size={62} stroke={7}>
+                  <span className="font-display text-xs font-bold tabular-nums">{goalPct}%</span>
+                </Ring>
+                <div className="min-w-0">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Monthly goal</div>
+                  <div className="mt-0.5 truncate text-sm font-semibold tabular-nums">{fmtMoney(wonThisMonth)} <span className="text-muted-foreground">/ {fmtMoney(goal)}</span></div>
+                  <div className="text-xs text-muted-foreground">{wonThisMonth >= goal ? "🎉 Goal hit!" : fmtMoney(goal - wonThisMonth) + " to go"}</div>
+                </div>
+              </>
+            ) : (
+              <button onClick={() => ui.openSettings()} className="flex items-center gap-3 text-left">
+                <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><Trophy className="size-5" /></div>
+                <div>
+                  <div className="text-sm font-semibold">Set a monthly goal</div>
+                  <div className="text-xs text-muted-foreground">Track revenue toward a target →</div>
+                </div>
+              </button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="stagger grid gap-4 lg:grid-cols-2">
         <Card>

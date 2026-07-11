@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { firstTerminal, todayStr, nowISO, uid, fmtMoney } from "@/lib/helpers";
+import { fireConfetti } from "@/lib/confetti";
 
 export function TerminalDialog({ payload }) {
   const { db, actions } = useStore();
@@ -36,6 +37,7 @@ export function TerminalDialog({ payload }) {
       l.updatedAt = nowISO();
     });
     toast(won ? "🎉 Marked as won!" : "Marked as lost.");
+    if (won) fireConfetti();
     ui.closeTerminal();
   };
 

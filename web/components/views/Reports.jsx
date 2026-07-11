@@ -1,9 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
+import { useUi } from "../ui-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { CountUp } from "@/components/ui/count-up";
+import { Button } from "@/components/ui/button";
 import { isOpenLead, statusById, fmtMoney, monthKey } from "@/lib/helpers";
+import { forecast, salesVelocity, avgDaysToClose, avgOpenAge, staleLeads, hottestLead } from "@/lib/insights";
+import { Zap, Flame, AlertTriangle, ChevronRight, Target } from "lucide-react";
 
 function Bar({ label, pct, color, val, mounted }) {
   return (
@@ -19,6 +23,7 @@ function Bar({ label, pct, color, val, mounted }) {
 
 export function Reports() {
   const { db } = useStore();
+  const ui = useUi();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const { leads, statuses, settings } = db;
@@ -31,6 +36,13 @@ export function Reports() {
   const wonVal = won.reduce((s, l) => s + (Number(l.value) || 0), 0);
   const avg = won.length ? Math.round(wonVal / won.length) : 0;
   const pipeVal = open.reduce((s, l) => s + (Number(l.value) || 0), 0);
+
+  const fc = forecast(leads, statuses);
+  const vel = salesVelocity(leads, statuses);
+  const atc = avgDaysToClose(leads, statuses);
+  const age = avgOpenAge(leads, statuses);
+  const stale = staleLeads(leads, statuses);
+  const hot = hottestLead(leads, statuses);
 
   const kpis = [
     { label: "Pipeline value", num: pipeVal, format: fmtMoney },
@@ -79,6 +91,59 @@ export function Reports() {
           </Card>
         ))}
       </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Card className="lift"><CardContent className="p-4">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"><Zap className="size-3.5 text-primary" /> Forecast</div>
+          <div className="mt-1.5 font-display text-2xl font-semibold tabular-nums"><CountUp value={fc} format={fmtMoney} /></div>
+          <div className="mt-1 text-xs text-muted-foreground">pipeline × win rate</div>
+        </CardContent></Card>
+        <Card className="lift"><CardContent className="p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Sales velocity</div>
+          <div className="mt-1.5 font-display text-2xl font-semibold tabular-nums"><CountUp value={vel} format={fmtMoney} /><span className="text-sm font-medium text-muted-foreground">/day</span></div>
+          <div className="mt-1 text-xs text-muted-foreground">expected revenue/day</div>
+        </CardContent></Card>
+        <Card className="lift"><CardContent className="p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Avg days to close</div>
+          <div className="mt-1.5 font-display text-2xl font-semibold tabular-nums">{atc == null ? "—" : <CountUp value={atc} format={(n) => n + "d"} />}</div>
+          <div className="mt-1 text-xs text-muted-foreground">won deals</div>
+        </CardContent></Card>
+        <Card className="lift"><CardContent className="p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Avg lead age</div>
+          <div className="mt-1.5 font-display text-2xl font-semibold tabular-nums">{age == null ? "—" : <CountUp value={age} format={(n) => n + "d"} />}</div>
+          <div className="mt-1 text-xs text-muted-foreground">open leads</div>
+        </CardContent></Card>
+      </div>
+
+      {(stale.length > 0 || hot) && (
+        <Card>
+          <CardContent className="p-5">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Smart nudges</div>
+            <div className="space-y-2">
+              {stale.length > 0 && (
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 p-3">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><AlertTriangle className="size-4" /></div>
+                  <div className="flex-1 text-sm"><span className="font-semibold">{stale.length} stale lead{stale.length > 1 ? "s" : ""}</span> <span className="text-muted-foreground">— no activity in 14+ days.</span></div>
+                  <Button size="sm" variant="outline" onClick={() => ui.openDetail(stale[0].id)}>Review</Button>
+                </div>
+              )}
+              {hot && (
+                <button onClick={() => ui.openDetail(hot.id)} className="flex w-full items-center gap-3 rounded-lg border border-border bg-secondary/40 p-3 text-left transition-colors hover:border-primary/40">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><Flame className="size-4" /></div>
+                  <div className="flex-1 truncate text-sm"><span className="font-semibold">Hottest lead:</span> {hot.name} <span className="text-muted-foreground">· {statusById(statuses, hot.status).label}{hot.value ? ` · ${fmtMoney(hot.value)}` : ""}</span></div>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                </button>
+              )}
+              {goal > 0 && (
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 p-3">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><Target className="size-4" /></div>
+                  <div className="flex-1 text-sm"><span className="font-semibold">{goalPct}% to goal</span> <span className="text-muted-foreground">— {wonThisMonth >= goal ? "hit it! 🎉" : fmtMoney(goal - wonThisMonth) + " to go this month."}</span></div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {goal > 0 && (
         <Card>
