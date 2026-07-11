@@ -13,9 +13,9 @@ import { Badge, Dot } from "@/components/ui/badge";
 import { Avatar } from "./bits";
 import {
   statusById, prioById, firstTerminal, relDays, fmtDate, fmtDateTime,
-  addDaysStr, todayStr, nowISO, uid, fmtMoney, hexA,
+  addDaysStr, todayStr, nowISO, uid, fmtMoney, hexA, gcalUrl,
 } from "@/lib/helpers";
-import { X, Mail, ExternalLink, Pencil, Trophy, Trash2 } from "lucide-react";
+import { X, Mail, ExternalLink, Pencil, Trophy, Trash2, CalendarPlus } from "lucide-react";
 
 export function LeadDrawer({ id }) {
   const { db, actions } = useStore();
@@ -78,6 +78,7 @@ export function LeadDrawer({ id }) {
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             <Button variant="outline" size="sm" onClick={() => ui.openEmail(l.id)}><Mail className="size-3.5" /> Follow-up email</Button>
+            {l.nextFollowUp && <a href={gcalUrl(l)} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}><CalendarPlus className="size-3.5" /> Calendar</a>}
             {l.sourceUrl && <a href={l.sourceUrl} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}><ExternalLink className="size-3.5" /> {l.source || "Link"}</a>}
             <Button variant="outline" size="sm" onClick={() => ui.openForm(l)}><Pencil className="size-3.5" /> Edit</Button>
             {!st.terminal && <Button variant="outline" size="sm" onClick={() => ui.openTerminal(l.id, "won")}><Trophy className="size-3.5" /> Won</Button>}
@@ -113,6 +114,7 @@ export function LeadDrawer({ id }) {
             <Row k="Phone" v={l.phone || "—"} />
             {l.project && <Row k="Project" v={l.project} />}
             <Row k="Source" v={l.source || "—"} />
+            {l.cadence > 0 && <Row k="Cadence" v={`Auto follow-up every ${l.cadence} days`} />}
             <Row k="Added" v={fmtDate(l.createdAt)} />
             <Row k="Updated" v={fmtDate(l.updatedAt)} />
           </section>

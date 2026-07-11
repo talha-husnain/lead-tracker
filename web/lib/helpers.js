@@ -79,6 +79,30 @@ export function hexA(hex, a) {
   return `rgba(${r},${g},${b},${a})`;
 }
 
+// ---- Google Calendar "Add to Calendar" link for a lead's follow-up ----
+export function gcalUrl(lead) {
+  if (!lead?.nextFollowUp) return "";
+  const date = lead.nextFollowUp.replace(/-/g, "");
+  const text = encodeURIComponent(`Follow up: ${lead.name || "lead"}${lead.company ? " (" + lead.company + ")" : ""}`);
+  const details = encodeURIComponent(`Lead follow-up.${lead.email ? " " + lead.email : ""}${lead.phone ? " · " + lead.phone : ""}`);
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${date}T090000/${date}T093000&details=${details}`;
+}
+
+// ---- Auto-enrich company + website from an email's domain ----
+const FREE_EMAIL = new Set([
+  "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "aol.com",
+  "proton.me", "protonmail.com", "live.com", "msn.com", "gmx.com", "me.com", "yandex.com",
+]);
+export function enrichFromEmail(email) {
+  const m = /@([^@\s]+)$/.exec((email || "").trim());
+  if (!m) return null;
+  const domain = m[1].toLowerCase();
+  if (FREE_EMAIL.has(domain)) return null;
+  const root = domain.split(".")[0];
+  const company = root.charAt(0).toUpperCase() + root.slice(1);
+  return { company, url: "https://" + domain };
+}
+
 // ---- CSV ----
 export function toCSV(leads, statuses) {
   const cols = ["Name", "Email", "Phone", "Company", "Project", "Title", "Source", "Status", "Priority", "Value", "Tags", "Next Follow-up", "Notes"];

@@ -5,9 +5,14 @@ import { Providers } from "@/components/Providers";
 const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-display-var", display: "swap" });
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans-var", display: "swap" });
 
+export const viewport = { themeColor: "#0A0A0A" };
+
 export const metadata = {
   title: "Lead Tracker",
   description: "Intelligent software, engineered to scale.",
+  applicationName: "Lead Tracker",
+  appleWebApp: { capable: true, title: "Lead Tracker", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export default function RootLayout({ children }) {

@@ -75,7 +75,7 @@ export function newLead(partial = {}) {
     id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     name: "", email: "", phone: "", company: "", title: "", project: "",
     source: "LinkedIn", sourceUrl: "", status: "new", priority: "warm",
-    value: 0, tags: [], nextFollowUp: "", notes: [], links: [],
+    value: 0, tags: [], nextFollowUp: "", cadence: 0, notes: [], links: [],
     createdAt: now, updatedAt: now, ...partial,
   };
 }

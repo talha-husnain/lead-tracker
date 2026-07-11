@@ -20,7 +20,15 @@ export function Today() {
 
   const done = (id) => actions.update((d) => {
     const l = d.leads.find((x) => x.id === id);
-    if (l) { l.notes.unshift({ id: uid(), text: "✓ Followed up.", at: nowISO() }); l.nextFollowUp = ""; l.updatedAt = nowISO(); }
+    if (!l) return;
+    if (l.cadence > 0) {
+      l.notes.unshift({ id: uid(), text: `✓ Followed up. Next in ${l.cadence}d.`, at: nowISO() });
+      l.nextFollowUp = addDaysStr(todayStr(), l.cadence);
+    } else {
+      l.notes.unshift({ id: uid(), text: "✓ Followed up.", at: nowISO() });
+      l.nextFollowUp = "";
+    }
+    l.updatedAt = nowISO();
   });
   const snooze = (id, days) => actions.update((d) => {
     const l = d.leads.find((x) => x.id === id);

@@ -19,6 +19,7 @@ import { StatusEditorDialog } from "./StatusEditorDialog";
 import { CommandPalette } from "./CommandPalette";
 import { HelpDialog } from "./HelpDialog";
 import { useToast } from "@/components/ui/toast";
+import { usePwa } from "./PwaProvider";
 import { toCSV, parseCSV, isOpenLead, relDays, statusById, nowISO, uid } from "@/lib/helpers";
 import { freshDB, normalizeDB, newLead } from "@/lib/constants";
 import { sampleLeads } from "@/lib/sample";
@@ -56,6 +57,9 @@ export function AppShell() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
+  const { canInstall, promptInstall } = usePwa();
+  const dbRef = useRef(db);
+  dbRef.current = db;
 
   useEffect(() => {
     const onKey = (e) => {
@@ -66,21 +70,30 @@ export function AppShell() {
       if (e.key === "/") { e.preventDefault(); searchRef.current?.focus(); }
       else if (e.key === "n" || e.key === "N") { e.preventDefault(); setFormLead(null); }
       else if (e.key === "?") setHelpOpen(true);
-      else if (e.key === "1") setTab("dashboard");
-      else if (e.key === "2") setTab("leads");
-      else if (e.key === "3") setTab("board");
-      else if (e.key === "4") setTab("reports");
+      else if (e.key === "1") setTab("today");
+      else if (e.key === "2") setTab("dashboard");
+      else if (e.key === "3") setTab("leads");
+      else if (e.key === "4") setTab("board");
+      else if (e.key === "5") setTab("reports");
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  // Browser reminders for due follow-ups (opt-in), on load + hourly while open.
   useEffect(() => {
-    if (!db?.settings?.notify || typeof window === "undefined") return;
-    if (!("Notification" in window) || Notification.permission !== "granted") return;
-    const due = db.leads.filter((l) => isOpenLead(db.statuses, l) && relDays(l.nextFollowUp) !== null && relDays(l.nextFollowUp) <= 0);
-    if (due.length) { try { new Notification("Lead Tracker — follow-ups due", { body: `${due.length} follow-up${due.length > 1 ? "s" : ""} need attention today.` }); } catch (e) { /* ignore */ } }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    const fire = () => {
+      const cur = dbRef.current;
+      if (!cur?.settings?.notify || Notification.permission !== "granted") return;
+      const due = cur.leads.filter((l) => isOpenLead(cur.statuses, l) && relDays(l.nextFollowUp) !== null && relDays(l.nextFollowUp) <= 0);
+      if (due.length) {
+        try { new Notification("Lead Tracker — follow-ups due", { body: `${due.length} follow-up${due.length > 1 ? "s" : ""} need attention today.`, icon: "/icons/icon-192.png" }); } catch (e) { /* ignore */ }
+      }
+    };
+    const t = setTimeout(fire, 4000);
+    const iv = setInterval(fire, 60 * 60 * 1000);
+    return () => { clearTimeout(t); clearInterval(iv); };
   }, []);
 
   if (!db) return null;
@@ -215,6 +228,8 @@ export function AppShell() {
               </div>
               <Button onClick={() => setFormLead(null)}><Plus className="size-4" /> Add Lead</Button>
               <DropdownMenu trigger={<Button variant="outline">Data <ChevronDown className="size-4" /></Button>}>
+                {canInstall && <DropdownItem onClick={promptInstall}>📱 Install app</DropdownItem>}
+                {canInstall && <DropdownSep />}
                 <DropdownItem onClick={backup}>⬇ Download backup (JSON)</DropdownItem>
                 <DropdownItem onClick={restore}>⬆ Restore from backup</DropdownItem>
                 <DropdownItem onClick={exportCSV}>↧ Export to CSV</DropdownItem>
