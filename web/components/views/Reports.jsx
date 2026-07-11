@@ -1,14 +1,16 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { Card, CardContent } from "@/components/ui/card";
+import { CountUp } from "@/components/ui/count-up";
 import { isOpenLead, statusById, fmtMoney, monthKey } from "@/lib/helpers";
 
-function Bar({ label, pct, color, val }) {
+function Bar({ label, pct, color, val, mounted }) {
   return (
     <div className="flex items-center gap-3">
       <div className="w-32 shrink-0 truncate text-sm">{label}</div>
       <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color, minWidth: 4 }} />
+        <div className="h-full rounded-full transition-[width] duration-700 ease-out" style={{ width: `${mounted ? pct : 0}%`, backgroundColor: color, minWidth: mounted ? 4 : 0 }} />
       </div>
       <div className="w-16 text-right text-sm font-semibold tabular-nums">{val}</div>
     </div>
@@ -17,6 +19,8 @@ function Bar({ label, pct, color, val }) {
 
 export function Reports() {
   const { db } = useStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { leads, statuses, settings } = db;
 
   const open = leads.filter((l) => isOpenLead(statuses, l));
@@ -28,7 +32,12 @@ export function Reports() {
   const avg = won.length ? Math.round(wonVal / won.length) : 0;
   const pipeVal = open.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
-  const kpis = [["Pipeline value", fmtMoney(pipeVal)], ["Won revenue", fmtMoney(wonVal)], ["Win rate", winRate + "%"], ["Avg deal size", fmtMoney(avg)]];
+  const kpis = [
+    { label: "Pipeline value", num: pipeVal, format: fmtMoney },
+    { label: "Won revenue", num: wonVal, format: fmtMoney },
+    { label: "Win rate", num: winRate, format: (n) => n + "%" },
+    { label: "Avg deal size", num: avg, format: fmtMoney },
+  ];
 
   const funnelStages = statuses.filter((s) => !s.terminal || s.terminal === "won");
   const fMax = Math.max(1, ...funnelStages.map((s) => leads.filter((l) => l.status === s.id).length));
@@ -61,11 +70,11 @@ export function Reports() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {kpis.map(([l, v]) => (
-          <Card key={l} className="lift">
+        {kpis.map((k) => (
+          <Card key={k.label} className="lift">
             <CardContent className="p-4">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{l}</div>
-              <div className="mt-1.5 font-display text-3xl font-bold tabular-nums">{v}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
+              <div className="mt-1.5 font-display text-3xl font-semibold tabular-nums"><CountUp value={k.num} format={k.format} /></div>
             </CardContent>
           </Card>
         ))}
@@ -94,7 +103,7 @@ export function Reports() {
             <div className="space-y-2.5">
               {funnelStages.map((s) => {
                 const n = leads.filter((l) => l.status === s.id).length;
-                return <Bar key={s.id} label={s.label} pct={(n / fMax) * 100} color={s.color} val={n} />;
+                return <Bar key={s.id} label={s.label} pct={(n / fMax) * 100} color={s.color} val={n} mounted={mounted} />;
               })}
             </div>
           </CardContent>
@@ -106,7 +115,7 @@ export function Reports() {
               {srcEntries.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No data yet.</p>
               ) : (
-                srcEntries.map(([k, v]) => <Bar key={k} label={k} pct={(v / sMax) * 100} color="hsl(var(--muted-foreground))" val={v} />)
+                srcEntries.map(([k, v]) => <Bar key={k} label={k} pct={(v / sMax) * 100} color="hsl(var(--muted-foreground))" val={v} mounted={mounted} />)
               )}
             </div>
           </CardContent>
@@ -122,7 +131,7 @@ export function Reports() {
               return (
                 <div key={m.key} className="flex flex-1 flex-col items-center justify-end gap-1">
                   <div className="text-[11px] font-semibold tabular-nums text-muted-foreground">{v ? "$" + Math.round(v / 1000) + "k" : ""}</div>
-                  <div className="w-9 rounded-t-md bg-primary" style={{ height: Math.max(3, (v / mMax) * 130) }} />
+                  <div className="w-9 rounded-t-md bg-primary transition-[height] duration-700 ease-out" style={{ height: mounted ? Math.max(3, (v / mMax) * 130) : 3 }} />
                   <div className="text-xs font-medium text-muted-foreground">{m.label}</div>
                 </div>
               );

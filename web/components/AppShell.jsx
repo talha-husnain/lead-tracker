@@ -253,10 +253,12 @@ export function AppShell() {
         )}
 
         <main className="mx-auto max-w-7xl px-4 py-6">
-          {tab === "dashboard" && <Dashboard />}
-          {tab === "leads" && <LeadsView />}
-          {tab === "board" && <Board />}
-          {tab === "reports" && <Reports />}
+          <div key={tab} className="animate-rise">
+            {tab === "dashboard" && <Dashboard />}
+            {tab === "leads" && <LeadsView />}
+            {tab === "board" && <Board />}
+            {tab === "reports" && <Reports />}
+          </div>
         </main>
       </div>
 

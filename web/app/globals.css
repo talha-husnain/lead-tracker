@@ -94,6 +94,27 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  /* engineering dot-grid, fading from the top */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image: radial-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(ellipse 92% 62% at 50% -6%, #000 38%, transparent 100%);
+    mask-image: radial-gradient(ellipse 92% 62% at 50% -6%, #000 38%, transparent 100%);
+  }
+  /* faint Signal Orange glow at the very top */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background: radial-gradient(56% 42% at 50% -9%, hsl(var(--primary) / 0.08), transparent 72%);
+  }
 }
 
 /* ---- display type: Space Grotesk ---- */
@@ -120,8 +141,12 @@
 .card-elev { box-shadow: none; }
 
 /* ---- restrained motion ---- */
-.lift { transition: transform 0.16s ease, border-color 0.16s ease; }
-.lift:hover { transform: translateY(-2px); border-color: hsl(var(--border) / 1); }
+.lift { transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 10px 30px -18px hsl(var(--primary) / 0.5);
+}
 
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(10px); }
@@ -138,8 +163,41 @@
 .stagger > *:nth-child(7) { animation-delay: 0.27s; }
 .stagger > *:nth-child(8) { animation-delay: 0.31s; }
 
+/* flowing pulse along pipeline connectors */
+.flow-line { position: relative; overflow: hidden; }
+.flow-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  animation: flow 1.7s linear infinite;
+}
+@keyframes flow {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(260%); }
+}
+
+/* soft pulse for the live logo mark */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.5); }
+  70% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
+.pulse-ring { animation: pulse-ring 2.6s ease-out infinite; }
+
+.shimmer {
+  background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--accent)) 37%, hsl(var(--muted)) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .stagger > * { animation: none !important; }
+  .animate-rise, .stagger > *, .flow-line::after, .pulse-ring, .shimmer { animation: none !important; }
   .lift, * { transition: none !important; }
   .lift:hover { transform: none; }
 }

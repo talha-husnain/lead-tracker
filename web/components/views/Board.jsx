@@ -82,8 +82,8 @@ export function Board() {
           if (i === 0) return column;
           return [
             <div key={"arrow-" + s.id} className="flex shrink-0 items-center self-start pt-9">
-              <span className="h-[3px] w-5 rounded-full gradient-anim opacity-80" />
-              <ChevronRight className="-ml-1 size-4 text-[hsl(var(--c-iris))]" />
+              <span className="flow-line h-[2px] w-6 rounded-full bg-primary/25" />
+              <ChevronRight className="-ml-1 size-4 text-primary" />
             </div>,
             column,
           ];

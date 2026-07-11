@@ -1,19 +1,23 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { useUi } from "../ui-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CountUp } from "@/components/ui/count-up";
 import { Avatar, FollowupPill } from "../bits";
 import { Dot } from "@/components/ui/badge";
 import { isOpenLead, statusById, relDays, fmtMoney, fmtDate, monthKey } from "@/lib/helpers";
 import { sampleLeads } from "@/lib/sample";
 import { cn } from "@/lib/utils";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles, Users, AlarmClock, CalendarDays, DollarSign, Trophy } from "lucide-react";
 
 export function Dashboard() {
   const { db, actions } = useStore();
   const ui = useUi();
   const { leads, statuses, settings } = db;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   if (leads.length === 0) {
     return (
@@ -44,11 +48,11 @@ export function Dashboard() {
   const wonVal = won.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
   const kpis = [
-    { label: "Open Leads", value: open.length, sub: `${leads.length} total` },
-    { label: "Follow-ups Due", value: due.length, sub: due.length ? "Needs attention today" : "All caught up", accent: due.length > 0 },
-    { label: "Due This Week", value: week.length, sub: "Next 7 days" },
-    { label: "Pipeline Value", value: fmtMoney(pipeVal), sub: "Open opportunities" },
-    { label: "Won", value: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}` },
+    { label: "Open Leads", num: open.length, sub: `${leads.length} total`, Icon: Users },
+    { label: "Follow-ups Due", num: due.length, sub: due.length ? "Needs attention today" : "All caught up", accent: due.length > 0, Icon: AlarmClock },
+    { label: "Due This Week", num: week.length, sub: "Next 7 days", Icon: CalendarDays },
+    { label: "Pipeline Value", num: pipeVal, format: fmtMoney, sub: "Open opportunities", Icon: DollarSign },
+    { label: "Won", num: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}`, Icon: Trophy },
   ];
 
   const attention = open.filter((l) => l.nextFollowUp)
@@ -81,8 +85,13 @@ export function Dashboard() {
       <div className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
           <div key={k.label} className="lift rounded-lg border border-border bg-card p-4">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
-            <div className={"mt-2 font-display text-[2rem] font-semibold leading-none tabular-nums " + (k.accent ? "text-primary" : "text-foreground")}>{k.value}</div>
+            <div className="flex items-start justify-between">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
+              <k.Icon className={"size-4 " + (k.accent ? "text-primary" : "text-muted-foreground/40")} />
+            </div>
+            <div className={"mt-2 font-display text-[2rem] font-semibold leading-none tabular-nums " + (k.accent ? "text-primary" : "text-foreground")}>
+              <CountUp value={k.num} format={k.format || ((n) => n)} />
+            </div>
             <div className="mt-2 text-xs text-muted-foreground">{k.sub}</div>
           </div>
         ))}
@@ -95,7 +104,7 @@ export function Dashboard() {
             <div className="text-lg font-semibold tabular-nums">{fmtMoney(wonThisMonth)}</div>
             <div className="text-sm text-muted-foreground">of {fmtMoney(goal)}</div>
             <div className="h-2.5 min-w-[160px] flex-1 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${goalPct}%` }} />
+              <div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${mounted ? goalPct : 0}%` }} />
             </div>
             <div className="text-sm font-semibold tabular-nums">{goalPct}%</div>
           </CardContent>
@@ -139,7 +148,7 @@ export function Dashboard() {
                       <Dot color={s.color} /> <span className="truncate">{s.label}</span>
                     </div>
                     <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${(n / maxCount) * 100}%`, backgroundColor: s.color, minWidth: n ? 4 : 0 }} />
+                      <div className="h-full rounded-full transition-[width] duration-700 ease-out" style={{ width: `${mounted ? (n / maxCount) * 100 : 0}%`, backgroundColor: s.color, minWidth: n && mounted ? 4 : 0 }} />
                     </div>
                     <div className="w-6 text-right text-sm font-semibold tabular-nums">{n}</div>
                   </div>
