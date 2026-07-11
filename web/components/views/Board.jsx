@@ -24,7 +24,7 @@ export function Board() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Board</h1>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight">Board</h1>
         <p className="text-sm text-muted-foreground">Drag a card between columns to change its status.</p>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-4">

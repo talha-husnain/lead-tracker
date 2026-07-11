@@ -49,21 +49,26 @@ export function AuthScreen() {
   };
 
   return (
-    <div className="grid min-h-screen place-items-center bg-gradient-to-b from-muted/40 to-background p-4">
-      <div className="w-full max-w-sm">
+    <div className="relative grid min-h-screen place-items-center overflow-hidden p-4">
+      <div aria-hidden className="pointer-events-none absolute -left-24 -top-32 size-[420px] rounded-full bg-gradient-brand opacity-25 blur-[110px]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-24 size-[460px] rounded-full opacity-20 blur-[120px]" style={{ background: "radial-gradient(circle, hsl(var(--grad-2)), transparent 70%)" }} />
+
+      <div className="relative w-full max-w-sm animate-rise">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <div className="grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md">
-            <Target className="size-6" />
+          <div className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-white glow-brand">
+            <Target className="size-7" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Lead Tracker</h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === "signup" ? "Create your free account" : "Sign in to your account"}
+            <h1 className="font-display text-2xl font-extrabold tracking-tight">
+              <span className="text-gradient">Lead Tracker</span>
+            </h1>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {mode === "signup" ? "Create your free account" : "Welcome back — sign in to continue"}
             </p>
           </div>
         </div>
 
-        <div className="space-y-3 rounded-xl border bg-card p-6 shadow-sm">
+        <div className="space-y-3 rounded-2xl border border-border/70 bg-card/70 p-6 shadow-xl backdrop-blur-xl">
           <Button type="button" variant="outline" className="w-full" onClick={google} disabled={busyG}>
             <GoogleIcon /> {busyG ? "Please wait…" : "Continue with Google"}
           </Button>

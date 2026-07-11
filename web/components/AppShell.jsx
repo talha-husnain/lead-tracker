@@ -189,18 +189,18 @@ export function AppShell() {
   return (
     <UiContext.Provider value={ui}>
       <div className="min-h-screen">
-        <header className="sticky top-0 z-30 border-b bg-card/80 backdrop-blur">
+        <header className="sticky top-0 z-30 border-b border-border/60 glass">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-2.5">
             <div className="flex items-center gap-2.5">
-              <div className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"><Target className="size-4" /></div>
-              <div className="font-semibold tracking-tight">Lead Tracker</div>
+              <div className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-white glow-brand-sm"><Target className="size-4" /></div>
+              <div className="font-display text-lg font-extrabold tracking-tight">Lead Tracker</div>
             </div>
 
-            <nav className="order-3 flex w-full gap-1 rounded-lg bg-muted p-1 sm:order-none sm:w-auto">
+            <nav className="order-3 flex w-full gap-1 rounded-xl bg-muted/70 p-1 sm:order-none sm:w-auto">
               {TABS.map(([id, label]) => (
                 <button key={id} onClick={() => setTab(id)}
-                  className={cn("flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none",
-                    tab === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+                  className={cn("flex-1 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all sm:flex-none",
+                    tab === id ? "bg-gradient-brand text-white glow-brand-sm" : "text-muted-foreground hover:text-foreground")}>
                   {label}
                 </button>
               ))}

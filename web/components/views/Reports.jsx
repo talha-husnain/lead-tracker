@@ -56,16 +56,16 @@ export function Reports() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Reports</h1>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight">Reports</h1>
         <p className="text-sm text-muted-foreground">Your pipeline performance.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map(([l, v]) => (
-          <Card key={l}>
+          <Card key={l} className="lift">
             <CardContent className="p-4">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">{l}</div>
-              <div className="mt-1 text-2xl font-semibold tabular-nums">{v}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{l}</div>
+              <div className="mt-1.5 font-display text-3xl font-bold tabular-nums">{v}</div>
             </CardContent>
           </Card>
         ))}

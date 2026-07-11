@@ -21,7 +21,7 @@ export function Dashboard() {
         <Card className="max-w-md text-center">
           <CardContent className="p-8">
             <div className="mx-auto mb-4 grid size-12 place-items-center rounded-xl bg-primary/10 text-2xl">🎯</div>
-            <h2 className="text-xl font-semibold">Welcome to your Lead Tracker</h2>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight">Welcome to your Lead Tracker</h2>
             <p className="mt-2 text-sm text-muted-foreground">Capture every lead, never miss a follow-up, and watch deals move from first contact to won.</p>
             <div className="mt-5 flex justify-center gap-2">
               <Button onClick={() => ui.openForm(null)}><Plus className="size-4" /> Add your first lead</Button>
@@ -71,7 +71,7 @@ export function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground">
             {due.length ? `You have ${due.length} follow-up${due.length > 1 ? "s" : ""} to send today.` : "You're all caught up."}
           </p>
@@ -81,11 +81,11 @@ export function Dashboard() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
-          <Card key={k.label} className="relative overflow-hidden">
-            <div className={cn("absolute inset-y-0 left-0 w-1", toneBar[k.tone])} />
+          <Card key={k.label} className="lift relative overflow-hidden">
+            <div className={cn("absolute inset-y-0 left-0 w-1 rounded-r-full", toneBar[k.tone])} />
             <CardContent className="p-4 pt-4">
-              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{k.label}</div>
-              <div className="mt-1 text-2xl font-semibold tabular-nums">{k.value}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
+              <div className="mt-1.5 font-display text-3xl font-bold tabular-nums">{k.value}</div>
               <div className="mt-1 text-xs text-muted-foreground">{k.sub}</div>
             </CardContent>
           </Card>

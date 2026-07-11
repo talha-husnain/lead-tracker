@@ -2,49 +2,64 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   Midnight Iris — a premium, dark-first design system.
+   Neutrals carry a slight violet bias; one saturated iris accent.
+   ============================================================ */
+
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  --background: 252 40% 99%;
+  --foreground: 255 22% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
+  --card-foreground: 255 22% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 243 75% 58%;
+  --popover-foreground: 255 22% 11%;
+  --primary: 252 88% 62%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 72% 51%;
+  --secondary: 252 40% 96%;
+  --secondary-foreground: 255 20% 16%;
+  --muted: 252 40% 96.5%;
+  --muted-foreground: 250 12% 45%;
+  --accent: 252 44% 95%;
+  --accent-foreground: 255 20% 16%;
+  --destructive: 351 78% 55%;
   --destructive-foreground: 0 0% 100%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 243 75% 58%;
-  --radius: 0.65rem;
+  --good: 158 74% 40%;
+  --border: 250 30% 91%;
+  --input: 250 30% 90%;
+  --ring: 252 88% 62%;
+  --radius: 0.95rem;
+
+  --grad-1: 256 90% 63%;
+  --grad-2: 290 84% 60%;
+  --glow: 256 90% 63%;
 }
 
 .dark {
-  --background: 240 10% 4.5%;
-  --foreground: 0 0% 98%;
-  --card: 240 8% 7.5%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 8% 7.5%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 243 82% 67%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 4% 15%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 4% 15%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 240 4% 16%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62% 52%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 4% 16%;
-  --input: 240 4% 19%;
-  --ring: 243 82% 67%;
+  --background: 250 26% 6%;
+  --foreground: 250 55% 96%;
+  --card: 250 20% 9.5%;
+  --card-foreground: 250 55% 96%;
+  --popover: 250 22% 11%;
+  --popover-foreground: 250 55% 96%;
+  --primary: 252 100% 73%;
+  --primary-foreground: 250 40% 8%;
+  --secondary: 250 20% 16%;
+  --secondary-foreground: 250 40% 94%;
+  --muted: 250 20% 15%;
+  --muted-foreground: 250 16% 66%;
+  --accent: 250 22% 18%;
+  --accent-foreground: 250 40% 94%;
+  --destructive: 352 88% 66%;
+  --destructive-foreground: 0 0% 100%;
+  --good: 158 70% 52%;
+  --border: 250 18% 19%;
+  --input: 250 20% 22%;
+  --ring: 252 100% 73%;
+
+  --grad-1: 256 96% 70%;
+  --grad-2: 292 90% 66%;
+  --glow: 256 96% 70%;
 }
 
 @theme inline {
@@ -64,13 +79,14 @@
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-good: hsl(var(--good));
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 6px);
 }
 
 @layer base {
@@ -78,12 +94,92 @@
     border-color: hsl(var(--border));
   }
   body {
+    font-family: var(--font-sans-var), ui-sans-serif, system-ui, -apple-system, sans-serif;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* ambient gradient mesh behind everything */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(58% 44% at 12% -6%, hsl(var(--grad-1) / 0.16), transparent 68%),
+      radial-gradient(50% 40% at 104% -4%, hsl(var(--grad-2) / 0.13), transparent 66%);
   }
 }
 
+/* ---- expressive display type ---- */
+.font-display {
+  font-family: var(--font-display-var), var(--font-sans-var), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ---- signature gradient text ---- */
+.text-gradient {
+  background-image: linear-gradient(115deg, hsl(var(--grad-1)), hsl(var(--grad-2)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- brand gradient surface + glow ---- */
+.bg-gradient-brand {
+  background-image: linear-gradient(120deg, hsl(var(--grad-1)), hsl(var(--grad-2)));
+}
+.glow-brand {
+  box-shadow: 0 8px 30px -8px hsl(var(--glow) / 0.55), 0 2px 8px -2px hsl(var(--glow) / 0.35);
+}
+.glow-brand-sm {
+  box-shadow: 0 6px 20px -8px hsl(var(--glow) / 0.5);
+}
+
+/* ---- elevated card shadow ---- */
+.card-elev {
+  box-shadow: 0 1px 2px rgba(16, 12, 40, 0.05), 0 18px 44px -30px rgba(16, 12, 40, 0.30);
+}
+.dark .card-elev {
+  box-shadow: inset 0 1px 0 0 hsl(0 0% 100% / 0.04), 0 24px 60px -36px rgba(0, 0, 0, 0.85);
+}
+
+/* ---- glass ---- */
+.glass {
+  background-color: hsl(var(--card) / 0.7);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* ---- hover lift ---- */
+.lift {
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+}
+
+/* ---- entrance animation ---- */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise, .lift, * { animation: none !important; transition: none !important; }
+  .lift:hover { transform: none; }
+}
+
+/* ---- scrollbars ---- */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); background-clip: padding-box; }
