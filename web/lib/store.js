@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState, useCallback } f
 import {
   onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   signOut as fbSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence,
+  GoogleAuthProvider, signInWithPopup,
 } from "firebase/auth";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { getFb, isCloudConfigured } from "./firebase";
@@ -116,6 +117,11 @@ export function StoreProvider({ children }) {
     const fb = getFb();
     return createUserWithEmailAndPassword(fb.auth, email, pw);
   }, []);
+  const signInWithGoogle = useCallback(() => {
+    const fb = getFb();
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(fb.auth, provider);
+  }, []);
   const resetPassword = useCallback((email) => {
     const fb = getFb();
     return sendPasswordResetEmail(fb.auth, email);
@@ -128,7 +134,7 @@ export function StoreProvider({ children }) {
   const value = {
     ready, mode, user, db, theme,
     signedIn: mode === "local" ? true : !!user,
-    actions: { update, setTheme, signIn, signUp, resetPassword, signOut },
+    actions: { update, setTheme, signIn, signUp, signInWithGoogle, resetPassword, signOut },
   };
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
