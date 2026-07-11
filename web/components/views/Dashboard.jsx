@@ -62,6 +62,11 @@ export function Dashboard() {
     .reduce((s, l) => s + (Number(l.value) || 0), 0);
   const goalPct = goal ? Math.min(100, Math.round((wonThisMonth / goal) * 100)) : 0;
 
+  const acts = [];
+  leads.forEach((l) => (l.notes || []).forEach((n) => acts.push({ l, n })));
+  acts.sort((a, b) => new Date(b.n.at) - new Date(a.n.at));
+  const recent = acts.slice(0, 6);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -148,6 +153,26 @@ export function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {recent.length > 0 && (
+        <Card>
+          <CardContent className="p-5">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent activity</div>
+            <div className="divide-y">
+              {recent.map(({ l, n }, i) => (
+                <button key={i} onClick={() => ui.openDetail(l.id)} className="flex w-full items-center gap-3 py-2.5 text-left hover:opacity-80">
+                  <Avatar name={l.name} size={34} />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{l.name || "Lead"}</div>
+                    <div className="truncate text-xs text-muted-foreground">{n.text}</div>
+                  </div>
+                  <div className="shrink-0 text-xs text-muted-foreground">{fmtDate(n.at)}</div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

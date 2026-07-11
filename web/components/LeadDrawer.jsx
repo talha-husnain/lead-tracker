@@ -47,11 +47,12 @@ export function LeadDrawer({ id }) {
     setNote("");
   };
   const delNote = (nid) => mutate((x) => { x.notes = x.notes.filter((n) => n.id !== nid); });
-  const markTerminal = (kind) => { setStatus(firstTerminal(db.statuses, kind)); toast(kind === "won" ? "🎉 Marked as won!" : "Marked as lost."); };
   const remove = () => {
-    if (!confirm(`Delete “${l.name || "this lead"}”?`)) return;
+    const idx = db.leads.findIndex((x) => x.id === id);
+    const snapshot = db.leads[idx];
     actions.update((d) => { d.leads = d.leads.filter((x) => x.id !== id); });
     ui.closeDetail();
+    toast(`Deleted “${l.name || "lead"}”.`, { label: "Undo", onClick: () => actions.update((d) => { d.leads.splice(Math.min(idx, d.leads.length), 0, snapshot); }) });
   };
 
   const d = relDays(l.nextFollowUp);
@@ -76,11 +77,11 @@ export function LeadDrawer({ id }) {
             {(l.tags || []).map((t) => <Badge key={t} className="text-muted-foreground">#{t}</Badge>)}
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {l.email && <a href={`mailto:${l.email}`} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}><Mail className="size-3.5" /> Email</a>}
+            <Button variant="outline" size="sm" onClick={() => ui.openEmail(l.id)}><Mail className="size-3.5" /> Follow-up email</Button>
             {l.sourceUrl && <a href={l.sourceUrl} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}><ExternalLink className="size-3.5" /> {l.source || "Link"}</a>}
             <Button variant="outline" size="sm" onClick={() => ui.openForm(l)}><Pencil className="size-3.5" /> Edit</Button>
-            {!st.terminal && <Button variant="outline" size="sm" onClick={() => markTerminal("won")}><Trophy className="size-3.5" /> Won</Button>}
-            {!st.terminal && <Button variant="outline" size="sm" onClick={() => markTerminal("lost")}>Lost</Button>}
+            {!st.terminal && <Button variant="outline" size="sm" onClick={() => ui.openTerminal(l.id, "won")}><Trophy className="size-3.5" /> Won</Button>}
+            {!st.terminal && <Button variant="outline" size="sm" onClick={() => ui.openTerminal(l.id, "lost")}>Lost</Button>}
             <Button variant="outline" size="sm" onClick={remove}><Trash2 className="size-3.5" /> Delete</Button>
           </div>
         </div>

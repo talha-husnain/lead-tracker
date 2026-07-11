@@ -49,6 +49,10 @@ export function LeadDialog({ lead }) {
         return i >= 0 ? { label: line.slice(0, i).trim(), url: line.slice(i + 1).trim() } : { label: line, url: line };
       }),
     };
+    if (!editing && data.email) {
+      const dup = db.leads.find((x) => x.email && x.email.toLowerCase() === data.email.toLowerCase());
+      if (dup && !confirm(`A lead with ${data.email} already exists (“${dup.name}”). Add anyway?`)) return;
+    }
     actions.update((d) => {
       if (editing) {
         const l = d.leads.find((x) => x.id === lead.id);

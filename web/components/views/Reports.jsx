@@ -43,6 +43,16 @@ export function Reports() {
     .reduce((s, l) => s + (Number(l.value) || 0), 0);
   const goalPct = goal ? Math.min(100, Math.round((wonThisMonth / goal) * 100)) : 0;
 
+  const base = new Date(); base.setDate(1);
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const dt = new Date(base.getFullYear(), base.getMonth() - i, 1);
+    months.push({ key: dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0"), label: dt.toLocaleDateString("en-US", { month: "short" }) });
+  }
+  const wonByMonth = {};
+  won.forEach((l) => { const k = monthKey(l.closedAt || l.updatedAt); wonByMonth[k] = (wonByMonth[k] || 0) + (Number(l.value) || 0); });
+  const mMax = Math.max(1, ...months.map((m) => wonByMonth[m.key] || 0));
+
   return (
     <div className="space-y-6">
       <div>
@@ -102,6 +112,24 @@ export function Reports() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardContent className="p-5">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Won revenue — last 6 months</div>
+          <div className="flex items-end gap-3" style={{ height: 180 }}>
+            {months.map((m) => {
+              const v = wonByMonth[m.key] || 0;
+              return (
+                <div key={m.key} className="flex flex-1 flex-col items-center justify-end gap-1">
+                  <div className="text-[11px] font-semibold tabular-nums text-muted-foreground">{v ? "$" + Math.round(v / 1000) + "k" : ""}</div>
+                  <div className="w-9 rounded-t-md bg-primary" style={{ height: Math.max(3, (v / mMax) * 130) }} />
+                  <div className="text-xs font-medium text-muted-foreground">{m.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

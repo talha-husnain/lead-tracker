@@ -5,17 +5,21 @@ import { useUi } from "../ui-context";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import { Avatar, PriorityTag, FollowupPill } from "../bits";
 import { Dot } from "@/components/ui/badge";
 import { PRIORITIES, SOURCES } from "@/lib/constants";
-import { statusById, prioById, relDays, fmtMoney, hexA, nowISO } from "@/lib/helpers";
+import { statusById, prioById, relDays, fmtMoney, hexA, nowISO, toCSV } from "@/lib/helpers";
 import { Pencil, Trash2, ExternalLink } from "lucide-react";
 
 export function LeadsView() {
   const { db, actions } = useStore();
   const ui = useUi();
+  const toast = useToast();
   const { leads, statuses } = db;
 
+  const [selected, setSelected] = useState(() => new Set());
   const [fStatus, setFStatus] = useState("all");
   const [fPrio, setFPrio] = useState("all");
   const [fSource, setFSource] = useState("all");
@@ -51,8 +55,40 @@ export function LeadsView() {
     if (statusById(d.statuses, val).terminal) l.closedAt = nowISO();
   });
   const removeLead = (id, name) => {
-    if (!confirm(`Delete “${name || "this lead"}”? This cannot be undone.`)) return;
+    const idx = leads.findIndex((x) => x.id === id);
+    const snapshot = leads[idx];
     actions.update((d) => { d.leads = d.leads.filter((x) => x.id !== id); });
+    setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
+    toast(`Deleted “${name || "lead"}”.`, { label: "Undo", onClick: () => actions.update((d) => { d.leads.splice(Math.min(idx, d.leads.length), 0, snapshot); }) });
+  };
+
+  const toggle = (id) => setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const allVisible = list.length > 0 && list.every((l) => selected.has(l.id));
+  const toggleAll = () => setSelected((s) => {
+    const n = new Set(s);
+    if (list.every((l) => n.has(l.id))) list.forEach((l) => n.delete(l.id));
+    else list.forEach((l) => n.add(l.id));
+    return n;
+  });
+  const bulkStatus = (val) => actions.update((d) => d.leads.forEach((l) => {
+    if (selected.has(l.id)) { l.status = val; l.updatedAt = nowISO(); if (statusById(d.statuses, val).terminal) l.closedAt = nowISO(); }
+  }));
+  const bulkFollowup = (val) => actions.update((d) => d.leads.forEach((l) => { if (selected.has(l.id)) { l.nextFollowUp = val; l.updatedAt = nowISO(); } }));
+  const bulkDelete = () => {
+    if (!confirm(`Delete ${selected.size} selected lead${selected.size > 1 ? "s" : ""}?`)) return;
+    const ids = selected;
+    actions.update((d) => { d.leads = d.leads.filter((l) => !ids.has(l.id)); });
+    toast(`${ids.size} deleted.`);
+    setSelected(new Set());
+  };
+  const bulkExport = () => {
+    const sel = leads.filter((l) => selected.has(l.id));
+    const blob = new Blob([toCSV(sel, statuses)], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "lead-tracker-selection.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   return (
@@ -96,6 +132,7 @@ export function LeadsView() {
           <table className="w-full min-w-[820px] text-sm">
             <thead>
               <tr className="border-b text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="w-10 px-4 py-2.5"><input type="checkbox" checked={allVisible} onChange={toggleAll} className="size-4 cursor-pointer accent-[hsl(var(--primary))]" /></th>
                 <th className="px-4 py-2.5 text-left font-semibold">Name</th>
                 <th className="px-4 py-2.5 text-left font-semibold">Contact</th>
                 <th className="px-4 py-2.5 text-left font-semibold">Status</th>
@@ -107,12 +144,13 @@ export function LeadsView() {
             </thead>
             <tbody>
               {list.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No leads match your filters.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">No leads match your filters.</td></tr>
               )}
               {list.map((l) => {
                 const st = statusById(statuses, l.status);
                 return (
-                  <tr key={l.id} className="border-b transition-colors last:border-0 hover:bg-muted/40">
+                  <tr key={l.id} className={"border-b transition-colors last:border-0 hover:bg-muted/40 " + (selected.has(l.id) ? "bg-primary/5" : "")}>
+                    <td className="px-4 py-2.5"><input type="checkbox" checked={selected.has(l.id)} onChange={() => toggle(l.id)} className="size-4 cursor-pointer accent-[hsl(var(--primary))]" /></td>
                     <td className="px-4 py-2.5">
                       <button className="flex items-center gap-3 text-left" onClick={() => ui.openDetail(l.id)}>
                         <Avatar name={l.name} size={34} />
@@ -160,6 +198,22 @@ export function LeadsView() {
           </table>
         </div>
       </Card>
+
+      {selected.size > 0 && (
+        <div className="fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 flex-wrap items-center gap-2 rounded-xl border bg-card px-3 py-2 shadow-lg">
+          <span className="px-1 text-sm"><strong className="text-primary">{selected.size}</strong> selected</span>
+          <Select defaultValue="" onChange={(e) => { if (e.target.value) { bulkStatus(e.target.value); e.target.value = ""; } }} className="h-8 w-auto text-xs">
+            <option value="">Change status…</option>
+            {statuses.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+          </Select>
+          <label className="flex items-center gap-1 text-xs text-muted-foreground">Follow-up
+            <Input type="date" onChange={(e) => bulkFollowup(e.target.value)} className="h-8 w-auto" />
+          </label>
+          <Button variant="ghost" size="sm" onClick={bulkExport}>Export</Button>
+          <Button variant="ghost" size="sm" className="text-destructive" onClick={bulkDelete}>Delete</Button>
+          <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>Clear</Button>
+        </div>
+      )}
     </div>
   );
 }
