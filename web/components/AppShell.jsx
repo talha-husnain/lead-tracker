@@ -192,7 +192,7 @@ export function AppShell() {
         <header className="sticky top-0 z-30 border-b border-border/60 glass">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-2.5">
             <div className="flex items-center gap-2.5">
-              <div className="grid size-9 place-items-center rounded-[18px] bg-primary text-primary-foreground"><Target className="size-[18px]" /></div>
+              <div className="pulse-ring grid size-9 place-items-center rounded-[18px] bg-primary text-primary-foreground"><Target className="size-[18px]" /></div>
               <div className="font-display text-xl font-bold tracking-tight">Lead Tracker<span className="text-primary">.</span></div>
             </div>
 

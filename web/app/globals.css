@@ -106,16 +106,24 @@
     -webkit-mask-image: radial-gradient(ellipse 92% 62% at 50% -6%, #000 38%, transparent 100%);
     mask-image: radial-gradient(ellipse 92% 62% at 50% -6%, #000 38%, transparent 100%);
   }
-  /* faint Signal Orange glow at the very top */
+  /* faint Signal Orange glow at the very top — gently breathing */
   body::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: -2;
     pointer-events: none;
-    background: radial-gradient(56% 42% at 50% -9%, hsl(var(--primary) / 0.08), transparent 72%);
+    background: radial-gradient(58% 44% at 50% -8%, hsl(var(--primary) / 0.13), transparent 72%);
+    animation: breathe 7s ease-in-out infinite;
   }
 }
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@keyframes spin360 { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin360 6s linear infinite; }
 
 /* ---- display type: Space Grotesk ---- */
 .font-display {
@@ -149,19 +157,19 @@
 }
 
 @keyframes rise-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(22px) scale(0.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
-.animate-rise { animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.stagger > * { animation: rise-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.stagger > *:nth-child(1) { animation-delay: 0.03s; }
-.stagger > *:nth-child(2) { animation-delay: 0.07s; }
-.stagger > *:nth-child(3) { animation-delay: 0.11s; }
-.stagger > *:nth-child(4) { animation-delay: 0.15s; }
-.stagger > *:nth-child(5) { animation-delay: 0.19s; }
-.stagger > *:nth-child(6) { animation-delay: 0.23s; }
-.stagger > *:nth-child(7) { animation-delay: 0.27s; }
-.stagger > *:nth-child(8) { animation-delay: 0.31s; }
+.animate-rise { animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > * { animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger > *:nth-child(4) { animation-delay: 0.22s; }
+.stagger > *:nth-child(5) { animation-delay: 0.28s; }
+.stagger > *:nth-child(6) { animation-delay: 0.34s; }
+.stagger > *:nth-child(7) { animation-delay: 0.4s; }
+.stagger > *:nth-child(8) { animation-delay: 0.46s; }
 
 /* flowing pulse along pipeline connectors */
 .flow-line { position: relative; overflow: hidden; }
@@ -197,7 +205,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .stagger > *, .flow-line::after, .pulse-ring, .shimmer { animation: none !important; }
+  .animate-rise, .stagger > *, .flow-line::after, .pulse-ring, .shimmer, .spin-slow, body::after { animation: none !important; }
   .lift, * { transition: none !important; }
   .lift:hover { transform: none; }
 }
