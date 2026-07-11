@@ -192,8 +192,8 @@ export function AppShell() {
         <header className="sticky top-0 z-30 border-b border-border/60 glass">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-2.5">
             <div className="flex items-center gap-2.5">
-              <div className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-white glow-brand-sm"><Target className="size-4" /></div>
-              <div className="font-display text-lg font-extrabold tracking-tight">Lead Tracker</div>
+              <div className="grid size-9 place-items-center rounded-xl gradient-anim text-white glow-brand-sm"><Target className="size-4" /></div>
+              <div className="font-display text-xl font-bold tracking-tight text-gradient">Lead Tracker</div>
             </div>
 
             <nav className="order-3 flex w-full gap-1 rounded-xl bg-muted/70 p-1 sm:order-none sm:w-auto">

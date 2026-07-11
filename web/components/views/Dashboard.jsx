@@ -44,13 +44,12 @@ export function Dashboard() {
   const wonVal = won.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
   const kpis = [
-    { label: "Open Leads", value: open.length, sub: `${leads.length} total`, tone: "primary" },
-    { label: "Follow-ups Due", value: due.length, sub: due.length ? "Needs attention today" : "All caught up 🎉", tone: due.length ? "danger" : "good" },
-    { label: "Due This Week", value: week.length, sub: "Next 7 days", tone: "warn" },
-    { label: "Pipeline Value", value: fmtMoney(pipeVal), sub: "Open opportunities", tone: "primary" },
-    { label: "Won", value: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}`, tone: "good" },
+    { label: "Open Leads", value: open.length, sub: `${leads.length} total`, hue: "iris" },
+    { label: "Follow-ups Due", value: due.length, sub: due.length ? "Needs attention today" : "All caught up 🎉", hue: due.length ? "pink" : "mint" },
+    { label: "Due This Week", value: week.length, sub: "Next 7 days", hue: "amber" },
+    { label: "Pipeline Value", value: fmtMoney(pipeVal), sub: "Open opportunities", hue: "sky" },
+    { label: "Won", value: won.length, sub: `${winRate}% win rate · ${fmtMoney(wonVal)}`, hue: "mint" },
   ];
-  const toneBar = { primary: "bg-primary", danger: "bg-destructive", good: "bg-green-600", warn: "bg-amber-500" };
 
   const attention = open.filter((l) => l.nextFollowUp)
     .sort((a, b) => (relDays(a.nextFollowUp) ?? 1e9) - (relDays(b.nextFollowUp) ?? 1e9)).slice(0, 7);
@@ -79,16 +78,15 @@ export function Dashboard() {
         <Button onClick={() => ui.openForm(null)}><Plus className="size-4" /> Add Lead</Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
-          <Card key={k.label} className="lift relative overflow-hidden">
-            <div className={cn("absolute inset-y-0 left-0 w-1 rounded-r-full", toneBar[k.tone])} />
-            <CardContent className="p-4 pt-4">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
-              <div className="mt-1.5 font-display text-3xl font-bold tabular-nums">{k.value}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{k.sub}</div>
-            </CardContent>
-          </Card>
+          <div key={k.label} className="lift group relative overflow-hidden rounded-2xl border border-border/70 bg-card p-4 card-elev">
+            <div className="pointer-events-none absolute -right-8 -top-10 size-28 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-45" style={{ background: `hsl(var(--c-${k.hue}))` }} />
+            <div className="relative text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</div>
+            <div className="relative mt-2 font-display text-[2rem] leading-none tabular-nums" style={{ color: `hsl(var(--c-${k.hue}))` }}>{k.value}</div>
+            <div className="relative mt-2 text-xs text-muted-foreground">{k.sub}</div>
+            <div className="absolute inset-x-0 bottom-0 h-1" style={{ background: `linear-gradient(90deg, hsl(var(--c-${k.hue})), transparent)` }} />
+          </div>
         ))}
       </div>
 
@@ -106,7 +104,7 @@ export function Dashboard() {
         </Card>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="stagger grid gap-4 lg:grid-cols-2">
         <Card>
           <CardContent className="p-5">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">⏰ Needs attention</div>
