@@ -9,8 +9,10 @@ import { Today } from "./views/Today";
 import { Dashboard } from "./views/Dashboard";
 import { LeadsView } from "./views/LeadsView";
 import { Board } from "./views/Board";
+import { Projects } from "./views/Projects";
 import { Reports } from "./views/Reports";
 import { LeadDialog } from "./LeadDialog";
+import { ProjectDialog } from "./ProjectDialog";
 import { LeadDrawer } from "./LeadDrawer";
 import { EmailDialog } from "./EmailDialog";
 import { TerminalDialog } from "./TerminalDialog";
@@ -22,7 +24,7 @@ import { useToast } from "@/components/ui/toast";
 import { usePwa } from "./PwaProvider";
 import { toCSV, parseCSV, isOpenLead, relDays, statusById, nowISO, uid } from "@/lib/helpers";
 import { freshDB, normalizeDB, newLead } from "@/lib/constants";
-import { sampleLeads } from "@/lib/sample";
+import { sampleLeads, sampleProjects } from "@/lib/sample";
 import { Target, Plus, Moon, Sun, LogOut, Search, Cloud, ChevronDown, AlarmClock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +33,7 @@ const TABS = [
   ["dashboard", "Dashboard"],
   ["leads", "Leads"],
   ["board", "Board"],
+  ["projects", "Projects"],
   ["reports", "Reports"],
 ];
 
@@ -49,6 +52,8 @@ export function AppShell() {
   const [tab, setTab] = useState("today");
   const [detailId, setDetailId] = useState(null);
   const [formLead, setFormLead] = useState(undefined);
+  const [formProject, setFormProject] = useState(undefined);
+  const [projShowDone, setProjShowDone] = useState(false);
   const [emailId, setEmailId] = useState(null);
   const [terminal, setTerminal] = useState(null); // { id, kind }
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -74,7 +79,8 @@ export function AppShell() {
       else if (e.key === "2") setTab("dashboard");
       else if (e.key === "3") setTab("leads");
       else if (e.key === "4") setTab("board");
-      else if (e.key === "5") setTab("reports");
+      else if (e.key === "5") setTab("projects");
+      else if (e.key === "6") setTab("reports");
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -104,6 +110,9 @@ export function AppShell() {
     closeDetail: () => setDetailId(null),
     openForm: (lead = null) => setFormLead(lead),
     closeForm: () => setFormLead(undefined),
+    openProjectForm: (project = null) => setFormProject(project),
+    closeProjectForm: () => setFormProject(undefined),
+    projShowDone, setProjShowDone,
     openEmail: (id) => setEmailId(id),
     closeEmail: () => setEmailId(null),
     openTerminal: (id, kind) => setTerminal({ id, kind }),
@@ -133,7 +142,7 @@ export function AppShell() {
         try {
           const data = normalizeDB(JSON.parse(reader.result));
           if (!confirm(`Restore ${data.leads.length} leads from this backup? This replaces your current data.`)) return;
-          actions.update((d) => { d.leads = data.leads; d.statuses = data.statuses; const t = d.settings.theme; d.settings = data.settings; d.settings.theme = t; });
+          actions.update((d) => { d.leads = data.leads; d.projects = data.projects || []; d.statuses = data.statuses; const t = d.settings.theme; d.settings = data.settings; d.settings.theme = t; });
           toast("Backup restored.");
         } catch (e) { alert("Could not restore: " + e.message); }
       };
@@ -188,11 +197,11 @@ export function AppShell() {
     };
     inp.click();
   };
-  const loadSample = () => actions.update((d) => { d.leads = [...sampleLeads(), ...d.leads]; });
+  const loadSample = () => actions.update((d) => { d.leads = [...sampleLeads(), ...d.leads]; if (!Array.isArray(d.projects)) d.projects = []; d.projects = [...sampleProjects(), ...d.projects]; });
   const clearAll = () => {
     if (!confirm("Delete ALL leads and reset the pipeline? Download a backup first if unsure.")) return;
     if (!confirm("Are you absolutely sure? Everything will be erased.")) return;
-    actions.update((d) => { const fresh = freshDB(); const t = d.settings.theme; d.leads = fresh.leads; d.statuses = fresh.statuses; d.settings = fresh.settings; d.settings.theme = t; });
+    actions.update((d) => { const fresh = freshDB(); const t = d.settings.theme; d.leads = fresh.leads; d.projects = fresh.projects; d.statuses = fresh.statuses; d.settings = fresh.settings; d.settings.theme = t; });
     setDetailId(null);
     toast("All data cleared.");
   };
@@ -275,6 +284,7 @@ export function AppShell() {
             {tab === "dashboard" && <Dashboard />}
             {tab === "leads" && <LeadsView />}
             {tab === "board" && <Board />}
+            {tab === "projects" && <Projects />}
             {tab === "reports" && <Reports />}
           </div>
         </main>
@@ -282,6 +292,7 @@ export function AppShell() {
 
       <LeadDrawer id={detailId} />
       {formLead !== undefined && <LeadDialog lead={formLead} />}
+      {formProject !== undefined && <ProjectDialog project={formProject} />}
       {emailId && <EmailDialog id={emailId} />}
       {terminal && <TerminalDialog payload={terminal} />}
       {settingsOpen && <SettingsDialog />}
