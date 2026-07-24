@@ -1,4 +1,4 @@
-import { newLead } from "./constants";
+import { newLead, newProject } from "./constants";
 import { addDaysStr, todayStr, nowISO, uid } from "./helpers";
 
 export function sampleLeads() {
@@ -11,5 +11,23 @@ export function sampleLeads() {
     S("Priya Nair", { company: "Lumen Ventures", title: "Partner", email: "priya@lumen.vc", source: "Event / Conference", status: "negotiation", priority: "hot", value: 36000, nextFollowUp: day(1), tags: ["enterprise"] }),
     S("James Wright", { company: "Wright Auto Group", title: "Marketing Lead", source: "Website", status: "won", priority: "warm", value: 18000, notes: [{ id: uid(), text: "Signed! Kickoff next week.", at: nowISO() }] }),
     S("Tom Baker", { company: "Baker & Co Law", title: "Partner", email: "tom@bakerlaw.com", source: "Cold Email", status: "new", priority: "cold", value: 6000, nextFollowUp: day(5) }),
+  ];
+}
+
+export function sampleProjects() {
+  const day = (n) => addDaysStr(todayStr(), n);
+  const P = (name, client, updates) => newProject({
+    name, client,
+    updates: updates.map((u) => ({ id: uid(), date: u.d, comment: u.c, at: nowISO() })),
+  });
+  return [
+    P("Website redesign", "Wright Auto Group", [
+      { d: day(-2), c: "Homepage wireframes approved." },
+      { d: day(-1), c: "Started building the hero + inventory sections." },
+    ]),
+    P("Q3 social campaign", "Aurora Skincare", [
+      { d: day(-1), c: "Content calendar drafted; awaiting product photos." },
+    ]),
+    P("SEO retainer", "Peak Fitness", []),
   ];
 }

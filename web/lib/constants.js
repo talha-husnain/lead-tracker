@@ -42,6 +42,7 @@ export function freshDB() {
   return {
     version: 2,
     leads: [],
+    projects: [],
     statuses: DEFAULT_STATUSES.map((s) => ({ ...s })),
     settings: {
       theme: null, goal: 0, senderName: "", senderCompany: "BrandLux Media",
@@ -66,6 +67,11 @@ export function normalizeDB(data) {
     if (!Array.isArray(l.notes)) l.notes = [];
     if (!Array.isArray(l.tags)) l.tags = [];
   });
+  if (!Array.isArray(data.projects)) data.projects = [];
+  data.projects.forEach((p) => {
+    if (!Array.isArray(p.updates)) p.updates = [];
+    if (!p.status) p.status = "active";
+  });
   return data;
 }
 
@@ -77,5 +83,14 @@ export function newLead(partial = {}) {
     source: "LinkedIn", sourceUrl: "", status: "new", priority: "warm",
     value: 0, tags: [], nextFollowUp: "", cadence: 0, notes: [], links: [],
     createdAt: now, updatedAt: now, ...partial,
+  };
+}
+
+export function newProject(partial = {}) {
+  const now = new Date().toISOString();
+  return {
+    id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    name: "", client: "", description: "", status: "active",
+    updates: [], createdAt: now, updatedAt: now, ...partial,
   };
 }

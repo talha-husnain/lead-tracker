@@ -7,7 +7,7 @@ const ROWS = [
   ["N", "New lead"],
   ["/", "Search"],
   ["Ctrl / ⌘ + K", "Command palette"],
-  ["1 · 2 · 3 · 4", "Dashboard · Leads · Board · Reports"],
+  ["1 – 6", "Today · Dashboard · Leads · Board · Projects · Reports"],
   ["?", "This help"],
   ["Esc", "Close"],
 ];

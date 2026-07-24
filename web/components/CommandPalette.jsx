@@ -13,9 +13,11 @@ export function CommandPalette() {
 
   const commands = [
     { label: "➕ Add lead", run: () => ui.openForm(null) },
+    { label: "📁 Add project", run: () => { ui.setTab("projects"); ui.openProjectForm(null); } },
     { label: "📊 Go to Dashboard", run: () => ui.setTab("dashboard") },
     { label: "📇 Go to Leads", run: () => ui.setTab("leads") },
     { label: "🗂 Go to Board", run: () => ui.setTab("board") },
+    { label: "📂 Go to Projects", run: () => ui.setTab("projects") },
     { label: "📈 Go to Reports", run: () => ui.setTab("reports") },
     { label: "⚙ Settings", run: () => ui.openSettings() },
     { label: "🎨 Pipeline & colors", run: () => ui.openStatus() },
